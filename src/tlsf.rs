@@ -104,6 +104,15 @@ impl Heap {
         })
     }
 
+    unsafe fn realloc(&self, ptr: *mut u8, new_layout: Layout) -> Option<NonNull<u8>> {
+        critical_section::with(|cs| {
+            self.heap
+                .borrow_ref_mut(cs)
+                .tlsf
+                .reallocate(NonNull::new_unchecked(ptr), new_layout)
+        })
+    }
+
     /// Get the amount of bytes used by the allocator.
     pub fn used(&self) -> usize {
         critical_section::with(|cs| {
@@ -143,6 +152,15 @@ unsafe impl GlobalAlloc for Heap {
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
         self.dealloc(ptr, layout)
+    }
+
+    unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
+        // SAFETY: `layout.align()` is a power of two, and the size precondition
+        // is upheld by the caller.
+        let new_layout =
+            unsafe { core::alloc::Layout::from_size_align_unchecked(new_size, layout.align()) };
+        self.realloc(ptr, new_layout)
+            .map_or(ptr::null_mut(), |allocation| allocation.as_ptr())
     }
 }
 

@@ -6,7 +6,7 @@ authors = [
     "Sébastien Béchet <sebastien.bechet@osinix.com>",
 ]
 
-description = "A heap allocator for embedded systems"
+description = "Rist0 fork of embedded-alloc"
 repository = "https://github.com/rust-embedded/embedded-alloc"
 documentation = "https://docs.rs/embedded-alloc"
 readme = "README.md"
@@ -20,7 +20,7 @@ keywords = [
     "cortex-m",
 ]
 license = "MIT OR Apache-2.0"
-name = "embedded-alloc"
+name = "risc0-embedded-alloc"
 version = "0.7.0"
 
 [features]
